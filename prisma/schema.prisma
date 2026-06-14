@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model birds {
+  id            Int             @id @default(autoincrement()) @db.UnsignedInt
+  user_id       Int             @db.UnsignedInt
+  nama          String          @db.VarChar(100)
+  jenis         String          @db.VarChar(100)
+  created_at    DateTime?       @default(now()) @db.Timestamp(0)
+  users         users           @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_birds_users")
+  registrations registrations[]
+
+  @@index([user_id], map: "idx_birds_user")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model events {
+  id            Int             @id @default(autoincrement()) @db.UnsignedInt
+  nama          String          @db.VarChar(200)
+  tanggal       DateTime        @db.Date
+  lokasi        String          @db.VarChar(200)
+  status        String          @default("draft") @db.VarChar(20)
+  biaya         Decimal?        @default(0.00) @db.Decimal(12, 2)
+  created_at    DateTime?       @default(now()) @db.Timestamp(0)
+  registrations registrations[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model registrations {
+  id            Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id       Int       @db.UnsignedInt
+  event_id      Int       @db.UnsignedInt
+  bird_id       Int       @db.UnsignedInt
+  kategori      String    @db.VarChar(100)
+  nomor_peserta String?   @unique(map: "nomor_peserta") @db.VarChar(20)
+  status_bayar  String    @default("belum_bayar") @db.VarChar(20)
+  registered_at DateTime? @default(now()) @db.Timestamp(0)
+  birds         birds     @relation(fields: [bird_id], references: [id], onUpdate: Restrict, map: "fk_reg_birds")
+  events        events    @relation(fields: [event_id], references: [id], onUpdate: Restrict, map: "fk_reg_events")
+  users         users     @relation(fields: [user_id], references: [id], onUpdate: Restrict, map: "fk_reg_users")
+  scores        scores[]
+
+  @@index([bird_id], map: "idx_reg_bird")
+  @@index([event_id], map: "idx_reg_event")
+  @@index([user_id], map: "idx_reg_user")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model scores {
+  id              Int           @id @default(autoincrement()) @db.UnsignedInt
+  registration_id Int           @db.UnsignedInt
+  judge_id        String        @db.VarChar(20)
+  total_nilai     Int
+  peringkat       Int?
+  catatan         String?       @db.Text
+  scored_at       DateTime?     @default(now()) @db.Timestamp(0)
+  registrations   registrations @relation(fields: [registration_id], references: [id], onUpdate: Restrict, map: "fk_scores_reg")
+
+  @@unique([registration_id, judge_id], map: "registration_id")
+  @@index([judge_id], map: "idx_scores_judge")
+  @@index([registration_id], map: "idx_scores_reg")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model users {
+  id            Int             @id @default(autoincrement()) @db.UnsignedInt
+  nama          String          @db.VarChar(100)
+  email         String          @unique(map: "email") @db.VarChar(150)
+  password_hash String          @db.Text
+  role          String          @default("peserta") @db.VarChar(20)
+  no_telp       String?         @db.VarChar(20)
+  created_at    DateTime?       @default(now()) @db.Timestamp(0)
+  birds         birds[]
+  registrations registrations[]
+}

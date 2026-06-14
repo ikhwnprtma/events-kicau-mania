@@ -1,0 +1,1171 @@
+openapi: 3.0.3
+info:
+  title: Sample Secure API
+  description: Complete OpenAPI 3.0 template demonstrating JWT Bearer and API Key authorization.
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter your valid JWT token. Do NOT prefix it with 'Bearer '.
+
+  schemas:
+    # Schema untuk input login
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: "peserta@kicau.com"
+        password:
+          type: string
+          format: password
+          example: "rahasia123"
+
+    # Schema untuk data user di dalam objek respons sukses
+    UserAuthData:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nama:
+          type: string
+          example: "Marsuni Senior"
+        email:
+          type: string
+          format: email
+          example: "peserta@kicau.com"
+        role:
+          type: string
+          example: "peserta"
+
+    # Schema standar untuk response error login
+    LoginErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Email atau password salah"
+
+    #BIRDS REQ,RES
+    BirdRequest:
+      type: object
+      required:
+        - nama
+        - user_id
+        - jenis
+      properties:
+        nama:
+          type: string
+          example: "Marsuni"
+        user_id:
+          type: integer
+          example: 1
+        jenis:
+          type: string
+          example: "Murai Batu"
+    BirdResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        nama:
+          type: string
+          example: "Marsuni"
+        jenis:
+          type: string
+          example: "Murai Batu"
+
+    #EVENTS REQ,RES
+    EventRequest:
+      type: object
+      required:
+        - nama
+        - tanggal
+        - lokasi
+        - biaya
+      properties:
+        nama:
+          type: string
+          example: "Piala Raja Kicau Kediri"
+        tanggal:
+          type: string
+          format: date-time
+          example: "2026-08-17T09:00:00Z"
+        lokasi:
+          type: string
+          example: "Gedung Serbaguna, Kediri"
+        biaya:
+          type: integer
+          example: 50000
+    EventResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nama:
+          type: string
+          example: "Piala Raja Kicau Kediri"
+        tanggal:
+          type: string
+          format: date-time
+          example: "2026-08-17T09:00:00Z"
+        lokasi:
+          type: string
+          example: "Gedung Serbaguna, Kediri"
+        status:
+          type: string
+          example: "dr"
+        biaya:
+          type: integer
+          example: 50000
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-06-14T14:05:25Z"
+
+    #REGISTRATION REQ, RES
+    RegistrationRequest:
+      type: object
+      required:
+        - user_id
+        - event_id
+        - bird_id
+        - kategori
+      properties:
+        user_id:
+          type: integer
+          example: 1
+        event_id:
+          type: integer
+          example: 2
+        bird_id:
+          type: integer
+          example: 5
+        kategori:
+          type: string
+          example: "Murai Batu VIP"
+        status_bayar:
+          type: string
+          enum: [belum_bayar, lunas]
+          default: belum_bayar
+          example: "belum_bayar"
+    RegistrationResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        event_id:
+          type: integer
+          example: 2
+        bird_id:
+          type: integer
+          example: 5
+        kategori:
+          type: string
+          example: "Murai Batu VIP"
+        nomor_peserta:
+          type: string
+          example: "REG-2026-0001"
+        status_bayar:
+          type: string
+          example: "belum_bayar"
+        registered_at:
+          type: string
+          format: date-time
+          example: "2026-06-14T14:41:49Z"
+
+    #USERS REQ, RES
+    UserCreateRequest:
+      type: object
+      required:
+        - nama
+        - email
+        - password_hash
+      properties:
+        nama:
+          type: string
+          example: "Budiono Siregar"
+        email:
+          type: string
+          format: email
+          example: "budiono@kicau.com"
+        password_hash:
+          type: string
+          format: password
+          description: Password polos dari frontend, akan di-hash otomatis oleh server.
+          example: "rahasia123"
+        role:
+          type: string
+          enum: [peserta, admin]
+          default: peserta
+          example: "peserta"
+        no_telp:
+          type: string
+          nullable: true
+          example: "081234567890"
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        nama:
+          type: string
+          example: "Budiono Siregar"
+        email:
+          type: string
+          format: email
+          example: "budiono@kicau.com"
+        password_hash:
+          type: string
+          format: password
+          description: Jika diisi, password baru akan di-hash otomatis oleh server.
+          example: "baru123"
+        role:
+          type: string
+          enum: [peserta, admin]
+          example: "peserta"
+        no_telp:
+          type: string
+          nullable: true
+          example: "081234567890"
+
+    UserResponseData:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nama:
+          type: string
+          example: "Budiono Siregar"
+        email:
+          type: string
+          format: email
+          example: "budiono@kicau.com"
+        password_hash:
+          type: string
+          example: "$2b$10$eImiTX..."
+        role:
+          type: string
+          example: "peserta"
+        no_telp:
+          type: string
+          nullable: true
+          example: "081234567890"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-06-14T14:50:35Z"
+
+    UserErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: "Gagal mengambil data user atau pesan error deskriptif lainnya."
+        error:
+          type: string
+          example: "Pesan error internal dari database/sistem"
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Data tidak ditemukan atau pesan error internal server"
+
+security:
+  - BearerAuth: []
+
+
+paths:
+#Login REQUEST, RESPONSE
+  /api/login:
+      post:
+        summary: Login User untuk mendapatkan token JWT
+        tags:
+          - Authentication
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginRequest'
+        responses:
+          '200':
+            description: Login berhasil, token JWT berhasil digenerate
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                      example: true
+                    message:
+                      type: string
+                      example: "berhasil"
+                    data:
+                      type: object
+                      properties:
+                        token:
+                          type: string
+                          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        user:
+                          $ref: '#/components/schemas/UserAuthData'
+          '400':
+            description: Input tidak lengkap (Email dan password dibutuhkan)
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/LoginErrorResponse'
+                  example:
+                    error: "Email dan password dibutuhkan"
+          '401':
+            description: Autentikasi gagal (User tidak ditemukan atau password salah)
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/LoginErrorResponse'
+                  example:
+                    error: "Email atau password salah"
+          '500':
+            description: Internal Server Error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/LoginErrorResponse'
+
+#BIRDS DOC
+  /api/birds:
+    get:
+      summary: Ambil semua data burung
+      tags:
+        - Birds
+      responses:
+        '200':
+          description: Berhasil mengambil semua data burung
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BirdResponse'
+        '404':
+          description: Data tidak ditemukan / kosong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Tambah data burung baru
+      tags:
+        - Birds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BirdRequest'
+      responses:
+        '201':
+          description: Burung berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    $ref: '#/components/schemas/BirdResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/birds/{id}:
+    get:
+      summary: Ambil detail burung berdasarkan ID
+      tags:
+        - Birds
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID dari burung yang ingin dicari
+      responses:
+        '200':
+          description: Berhasil mengambil detail burung
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    $ref: '#/components/schemas/BirdResponse'
+        '404':
+          description: Data tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update data burung berdasarkan ID
+      tags:
+        - Birds
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID dari burung yang ingin diupdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BirdRequest'
+      responses:
+        '200':
+          description: Data burung berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    $ref: '#/components/schemas/BirdResponse'
+        '404':
+          description: Data tidak ditemukan sebelum update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Hapus data burung berdasarkan ID
+      tags:
+        - Birds
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID dari burung yang ingin dihapus
+      responses:
+        '200':
+          description: Burung berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil dihapus"
+                  data:
+                    $ref: '#/components/schemas/BirdResponse'
+        '404':
+          description: Data tidak ditemukan sebelum dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+#EVENTS DOC
+  /api/events:
+    get:
+      summary: Ambil semua data event
+      tags:
+        - Events
+      responses:
+        '200':
+          description: Berhasil mengambil semua data event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EventResponse'
+        '404':
+          description: Data tidak ditemukan / kosong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Tambah data event baru
+      tags:
+        - Events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequest'
+      responses:
+        '201':
+          description: Event berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    $ref: '#/components/schemas/EventResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/events/{id}:
+    get:
+      summary: Ambil detail event berdasarkan ID
+      tags:
+        - Events
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID dari event yang dicari
+      responses:
+        '200':
+          description: Berhasil mengambil detail event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    $ref: '#/components/schemas/EventResponse'
+        '404':
+          description: Data tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update data event berdasarkan ID
+      tags:
+        - Events
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID dari event yang ingin diupdate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequest'
+      responses:
+        '200':
+          description: Data event berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    $ref: '#/components/schemas/EventResponse'
+        '404':
+          description: Data tidak ditemukan sebelum update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Hapus data event berdasarkan ID
+      tags:
+        - Events
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID dari event yang ingin dihapus
+      responses:
+        '200':
+          description: Event berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil dihapus"
+                  data:
+                    $ref: '#/components/schemas/EventResponse'
+        '404':
+          description: Data tidak ditemukan sebelum dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+#REGISTRATIONS DOC
+  /api/registrations:
+    get:
+      summary: Ambil semua data pendaftaran
+      tags:
+        - Registrations
+      responses:
+        '200':
+          description: Berhasil mengambil semua data pendaftaran
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RegistrationResponse'
+        '404':
+          description: Data tidak ditemukan / kosong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Membuat pendaftaran lomba baru (Auto-generate nomor peserta)
+      tags:
+        - Registrations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+      responses:
+        '201':
+          description: Pendaftaran berhasil dibuat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    $ref: '#/components/schemas/RegistrationResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/registrations/{id}:
+    get:
+      summary: Ambil detail pendaftaran berdasarkan ID
+      tags:
+        - Registrations
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID pendaftaran (int UNSIGNED)
+      responses:
+        '200':
+          description: Berhasil mengambil detail pendaftaran
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    $ref: '#/components/schemas/RegistrationResponse'
+        '404':
+          description: Data tidak ditemukan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update data pendaftaran berdasarkan ID
+      tags:
+        - Registrations
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID pendaftaran yang ingin diubah
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequest'
+      responses:
+        '200':
+          description: Data pendaftaran berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil"
+                  data:
+                    $ref: '#/components/schemas/RegistrationResponse'
+        '404':
+          description: Data tidak ditemukan sebelum update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Hapus data pendaftaran berdasarkan ID
+      tags:
+        - Registrations
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID pendaftaran yang ingin dihapus
+      responses:
+        '200':
+          description: Pendaftaran berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "berhasil dihapus"
+                  data:
+                    $ref: '#/components/schemas/RegistrationResponse'
+        '404':
+          description: Data tidak ditemukan sebelum dihapus
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'  
+
+#USERS DOC
+  /api/users:
+    get:
+      summary: Ambil semua data user
+      tags:
+        - Users
+      responses:
+        '200':
+          description: Berhasil mengambil semua data user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Berhasil mengambil semua data user"
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserResponseData'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserErrorResponse'
+
+    post:
+      summary: Tambah user baru (Register)
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: User berhasil ditambahkan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User berhasil ditambahkan!"
+                  data:
+                    $ref: '#/components/schemas/UserResponseData'
+        '400':
+          description: Bad Request (Input kurang atau email duplikat)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Email sudah terdaftar, gunakan email lain."
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserErrorResponse'
+
+  /api/users/{id}:
+    get:
+      summary: Ambil detail user berdasarkan ID
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID dari user yang ingin dicari
+      responses:
+        '200':
+          description: Berhasil mengambil detail user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Berhasil mengambil detail user"
+                  data:
+                    $ref: '#/components/schemas/UserResponseData'
+        '404':
+          description: User tidak ditemukan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "User dengan ID 1 tidak ditemukan"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserErrorResponse'
+
+    put:
+      summary: Update data user berdasarkan ID
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID dari user yang ingin diperbarui
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: Data user berhasil diperbarui
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Data user berhasil diperbarui!"
+                  data:
+                    $ref: '#/components/schemas/UserResponseData'
+        '404':
+          description: User tidak ditemukan sebelum update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "User tidak ditemukan, gagal update."
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserErrorResponse'
+
+    delete:
+      summary: Hapus user berdasarkan ID
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID dari user yang ingin dihapus
+      responses:
+        '200':
+          description: User berhasil dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "User dengan ID 1 berhasil dihapus!"
+        '404':
+          description: User tidak ditemukan sebelum dihapus
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "User tidak ditemukan, gagal menghapus."
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserErrorResponse'
