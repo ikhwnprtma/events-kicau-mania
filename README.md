@@ -4,4 +4,6 @@
 - Version Node : 24.11.1
 - Version NPM : 11.6.2
 
-## Endpoint
+## Before Run Program
+- npm install
+- npx prisma migrate
